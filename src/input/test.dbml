@@ -1,0 +1,5 @@
+Table A {
+  id int [pk]
+  name varchar
+  email varchar
+}
