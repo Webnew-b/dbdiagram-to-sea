@@ -1,6 +1,12 @@
 use std::fmt;
 
 #[derive(Debug)]
+pub enum GlobalDefinition {
+    Table(Table),
+    Enum(ColumnEnum)
+}
+
+#[derive(Debug)]
 pub struct Table {
     pub name:String,
     pub columns:Vec<Column>
@@ -16,7 +22,7 @@ pub struct Column{
 #[derive(Debug)]
 pub struct ColumnEnum {
     pub name:String,
-    pub item:Vec<ColumnEnum>
+    pub item:Vec<ColumnEnumItem>
 }
 
 #[derive(Debug)]

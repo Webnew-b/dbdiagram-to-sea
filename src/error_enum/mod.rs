@@ -6,6 +6,8 @@ pub enum ParserError {
     ParserNotFound,
     OpenFileFailed,
     ReadFileFailed,
+    ParseTableFail,
+    ParseEnumFail,
 }
 
 impl fmt::Display for ParserError {
@@ -15,6 +17,8 @@ impl fmt::Display for ParserError {
             ParserError::ParserNotFound => write!(f,"Nothing was parsed from the file."),
             ParserError::OpenFileFailed => write!(f,"Could not open file."),
             ParserError::ReadFileFailed => write!(f,"Could not read file."),
+            ParserError::ParseTableFail => write!(f,"Fail to parse the table from the file."),
+            ParserError::ParseEnumFail => write!(f,"Fail to parse the enum from the file."),
         }
     }
 }

@@ -9,3 +9,9 @@ Table B {
   name varchar
   email varchar
 }
+
+Enum oop {
+  aawww
+  wwoo
+  wwppp 
+}
