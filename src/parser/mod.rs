@@ -1,14 +1,14 @@
 use nom::bytes::complete::take_while1;
 use nom::bytes::tag;
 use nom::character::complete::{multispace0, multispace1};
-use nom::combinator::{map, opt};
+use nom::combinator::{complete, map, opt};
 use nom::multi::{many0, separated_list0};
 use nom::sequence::{delimited, preceded, terminated};
 use nom::{IResult, Parser};
 
-use crate::db_type::{Column, Table};
+use crate::db_type::{Column, ColumnEnum, ColumnEnumItem, Table};
 
-fn whitespace0(input: &str) -> IResult<&str, &str> {
+pub(crate) fn whitespace0(input: &str) -> IResult<&str, &str> {
     nom::character::complete::space0::<&str, nom::error::Error<&str>>(input)
 }
 
@@ -73,3 +73,41 @@ pub fn parse_table(input:&str) -> IResult<&str,Table> {
     }))
 }
 
+pub fn parse_tables(input:&str) -> IResult<&str,Vec<Table>> {
+    let mut parser = many0(
+            preceded(multispace0, complete(parse_table))
+        );
+    let res = parser.parse(input)?;
+    Ok((res.0,res.1))
+}
+
+pub fn parse_enum_item(input:&str) -> IResult<&str,ColumnEnumItem> {
+    let mut parser = map (
+        (
+            preceded(multispace0, parse_ident),
+            opt(preceded(multispace1, parse_attr)
+        )
+        ),
+        |(name,attrs)| ColumnEnumItem {
+            name:name.to_string(),
+            attrs,
+        });
+    parser.parse(input)
+}
+
+pub fn parse_enum(input:&str) -> IResult<&str,ColumnEnum> {
+    let (input,_) = preceded(multispace0,tag("Enum")).parse(input)?;
+    let (input,_) = multispace1(input)?;
+    let (input,name) = parse_ident(input)?;
+    let (input,_) = multispace0(input)?;
+    let (input,item) = delimited(
+        tag("{"),
+        many0(terminated(parse_enum,multispace0)), 
+        tag("}")
+        ).parse(input)?;
+
+    Ok((input,ColumnEnum {
+        name:name.to_string(),
+        item
+    }))
+}

@@ -1,0 +1,11 @@
+Table A {
+  id int [pk]
+  name varchar
+  email varchar
+}
+
+Table B {
+  id int [pk]
+  name varchar
+  email varchar
+}
