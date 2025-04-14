@@ -4,7 +4,7 @@ Table A {
   email varchar
 }
 
-Table B {
+Table B as b {
   id int [pk]
   name varchar
   email varchar

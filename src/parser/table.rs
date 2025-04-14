@@ -8,15 +8,26 @@ use nom::{IResult, Parser};
 use crate::db_type::{Column, Table};
 use crate::parser::{is_ident_char, whitespace0};
 
-pub fn parse_ident(input:&str) -> IResult<&str,&str> {
+fn parse_alias(input:&str) -> IResult<&str,&str> {
+    let parser = opt(
+        preceded(
+            preceded(whitespace0, tag("as")),
+            preceded(multispace1, parse_ident)
+        )
+    );
+    let mut a = map(parser, |opt_alias| opt_alias.unwrap_or(""));
+    a.parse(input)
+}
+
+fn parse_ident(input:&str) -> IResult<&str,&str> {
     take_while1(is_ident_char)(input)
 }
 
-pub fn parse_type(input:&str) -> IResult<&str,&str> {
+fn parse_type(input:&str) -> IResult<&str,&str> {
     take_while1(|c:char| c.is_alphanumeric())(input)
 }
 
-pub fn parse_attr(input:&str) -> IResult<&str,Vec<String>>{
+fn parse_attr(input:&str) -> IResult<&str,Vec<String>>{
     let sep = preceded(
                 whitespace0,
                 take_while1(|c:char| c != ',' && c != ']')
@@ -53,6 +64,8 @@ pub fn parse_table(input:&str) -> IResult<&str,Table> {
     let (input,_) = multispace1(input)?;
     let (input,name) = parse_ident(input)?;
     let (input,_) = multispace0(input)?;
+    let (input,alias) = parse_alias(input)?;
+    let (input,_) = multispace0(input)?;
     let (input,columns) = delimited(
         tag("{"),
         many0(terminated(parse_column,multispace0)), 
@@ -60,6 +73,7 @@ pub fn parse_table(input:&str) -> IResult<&str,Table> {
         ).parse(input)?;
 
     Ok((input,Table {
+        alias:alias.to_string(),
         name:name.to_string(),
         columns
     }))

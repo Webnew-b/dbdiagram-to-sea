@@ -8,6 +8,7 @@ pub enum GlobalDefinition {
 
 #[derive(Debug)]
 pub struct Table {
+    pub alias:String,
     pub name:String,
     pub columns:Vec<Column>
 }
@@ -64,8 +65,8 @@ impl fmt::Display for Table {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "Table: \n name:{} \n columns:{:?}",
-            self.name,self.columns
+            "Table: \n alias:{}\n name:{} \n columns:{:?}",
+            self.alias,self.name,self.columns
         )
     }
 }
