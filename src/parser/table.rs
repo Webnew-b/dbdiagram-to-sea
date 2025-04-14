@@ -1,12 +1,36 @@
-use nom::bytes::complete::tag;
+use nom::bytes::complete::{tag, take_while1};
 use nom::character::complete::{multispace0, multispace1};
 use nom::combinator::{complete, map, opt};
-use nom::multi::many0;
+use nom::multi::{many0, separated_list0};
 use nom::sequence::{delimited, preceded, terminated};
 use nom::{IResult, Parser};
 
 use crate::db_type::{Column, Table};
-use crate::parser::{parse_attr, parse_ident, parse_type};
+use crate::parser::{is_ident_char, whitespace0};
+
+pub fn parse_ident(input:&str) -> IResult<&str,&str> {
+    take_while1(is_ident_char)(input)
+}
+
+pub fn parse_type(input:&str) -> IResult<&str,&str> {
+    take_while1(|c:char| c.is_alphanumeric())(input)
+}
+
+pub fn parse_attr(input:&str) -> IResult<&str,Vec<String>>{
+    let sep = preceded(
+                whitespace0,
+                take_while1(|c:char| c != ',' && c != ']')
+                );
+    let map_fn = map(sep, |s:&str| s.trim().to_string());
+
+    let sep_list = separated_list0(tag(","), map_fn); 
+    let mut parser = delimited(
+        tag("["), 
+        sep_list,
+        tag("]")
+    );
+    parser.parse(input)
+}
 
 pub fn parse_column(input:&str) -> IResult<&str,Column> {
     let mut parser = map (
