@@ -6,7 +6,7 @@ Table A{
 
 Table B as b {
   id int [pk]
-  name varchar
+  name varchar [default:"dwadaw",de: "wwaa",dep :"wwsss"]
   email varchar
 }
 

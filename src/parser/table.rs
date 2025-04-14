@@ -1,11 +1,12 @@
-use nom::bytes::complete::{tag, take_while1};
-use nom::character::complete::{multispace0, multispace1};
+use nom::branch::alt;
+use nom::bytes::complete::{is_not, tag, take_while1};
+use nom::character::complete::{char, multispace0, multispace1};
 use nom::combinator::{complete, map, opt};
 use nom::multi::{many0, separated_list0};
-use nom::sequence::{delimited, preceded, terminated};
+use nom::sequence::{delimited, preceded, separated_pair, terminated};
 use nom::{IResult, Parser};
 
-use crate::db_type::{Column, Table};
+use crate::db_type::{AttrEnum, Column, Table};
 use crate::parser::{is_ident_char, whitespace0};
 
 fn parse_alias(input:&str) -> IResult<&str,&str> {
@@ -27,14 +28,27 @@ fn parse_type(input:&str) -> IResult<&str,&str> {
     take_while1(|c:char| c.is_alphanumeric())(input)
 }
 
-fn parse_attr(input:&str) -> IResult<&str,Vec<String>>{
-    let sep = preceded(
-                whitespace0,
-                take_while1(|c:char| c != ',' && c != ']')
-                );
-    let map_fn = map(sep, |s:&str| s.trim().to_string());
+fn parse_string_value(input:&str) -> IResult<&str,&str> {
+    delimited(char('\"'),is_not("\""), char('\"')).parse(input)
+}
 
-    let sep_list = separated_list0(tag(","), map_fn); 
+fn parse_attr_item(input:&str)-> IResult<&str,AttrEnum> {
+    preceded(multispace0, 
+        alt((
+            map(
+                separated_pair(parse_ident, 
+                    preceded(multispace0, char(':')),
+                    preceded(multispace0, alt((parse_string_value,parse_ident)))
+                ),
+                |(k,v)| AttrEnum::KeyValue(k.to_string(),v.to_string())
+            ),
+            map(parse_ident, |name| AttrEnum::Sigle(name.to_string()))
+        ))
+        ).parse(input)
+}
+
+fn parse_attr(input:&str) -> IResult<&str,Vec<AttrEnum>>{
+    let sep_list = separated_list0(tag(","), parse_attr_item); 
     let mut parser = delimited(
         tag("["), 
         sep_list,

@@ -7,6 +7,13 @@ pub enum GlobalDefinition {
 }
 
 #[derive(Debug)]
+pub enum AttrEnum {
+    Sigle(String),
+    KeyValue(String,String),
+}
+
+
+#[derive(Debug)]
 pub struct Table {
     pub alias:String,
     pub name:String,
@@ -17,7 +24,7 @@ pub struct Table {
 pub struct Column{
     pub name:String,
     pub field_type:String,
-    pub attrs:Option<Vec<String>>
+    pub attrs:Option<Vec<AttrEnum>>
 }
 
 #[derive(Debug)]
