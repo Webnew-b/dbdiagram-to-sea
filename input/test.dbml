@@ -1,10 +1,16 @@
-Table A {
+Table A{
   id int [pk]
   name varchar
   email varchar
 }
 
 Table B as b {
+  id int [pk]
+  name varchar
+  email varchar
+}
+
+Table C as c{
   id int [pk]
   name varchar
   email varchar
