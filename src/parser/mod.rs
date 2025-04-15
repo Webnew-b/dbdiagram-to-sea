@@ -41,14 +41,14 @@ pub fn parse_all(input:&str) -> IResult<&str,Vec<GlobalDefinition>> {
 
 pub fn parse_file(input:&str) -> ParserResult<()> {
 
-    let res = parse_all(input).map_err(|e|{
+    let (_,res) = parse_all(input).map_err(|e|{
         error!("{}",e.to_string());
         ParserError::ParseEnumFail
     })?;
 
 
-    for table in res.1 {
-        info!("{:?}",table);
+    for table in res {
+        info!("{:#?}",table);
     }
 
     Ok(())
