@@ -16,14 +16,19 @@ Table C as c{
   email varchar(500)
 }
 
-Table D as d{
-  id int [pk]
-  name varchar(abc255)
-  email varchar(500)
-}
+
 
 Enum oop {
   aawww
   wwoo
   wwppp 
+}
+
+Ref c_to_d: schema1.C.id < schema1.D.cId
+
+Table D as d{
+  id int [pk]
+  cId int
+  name varchar(abc255)
+  email varchar(500)
 }

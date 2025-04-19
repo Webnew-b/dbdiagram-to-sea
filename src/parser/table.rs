@@ -2,11 +2,12 @@ use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag, take_while1};
 use nom::character::complete::{char, multispace0, multispace1};
 use nom::combinator::{complete, map, opt, verify};
-use nom::multi::{many0, separated_list0};
+use nom::multi::{many0, many1, separated_list0};
 use nom::sequence::{delimited, preceded, separated_pair, terminated};
 use nom::{IResult, Parser};
 
-use crate::db_type::{AttrEnum, Column, FieldType, Table};
+use crate::db_type::table::{Column, FieldType, Table};
+use crate::db_type::AttrEnum;
 use crate::parser::{is_ident_char, whitespace0};
 
 fn parse_alias(input:&str) -> IResult<&str,&str> {
@@ -55,7 +56,8 @@ fn parse_attr_item(input:&str)-> IResult<&str,AttrEnum> {
     preceded(multispace0, 
         alt((
             map(
-                separated_pair(parse_ident, 
+                separated_pair(
+                    parse_ident, 
                     preceded(multispace0, char(':')),
                     preceded(multispace0, alt((parse_string_value,parse_ident)))
                 ),
@@ -101,14 +103,15 @@ pub fn parse_table(input:&str) -> IResult<&str,Table> {
     let (input,_) = multispace0(input)?;
     let (input,columns) = delimited(
         tag("{"),
-        many0(terminated(parse_column,multispace0)), 
+        many1(terminated(parse_column,multispace0)),// todo implement the table note parse 
         tag("}")
         ).parse(input)?;
 
     Ok((input,Table {
         alias:alias.to_string(),
         name:name.to_string(),
-        columns
+        columns,
+        note:None
     }))
 }
 

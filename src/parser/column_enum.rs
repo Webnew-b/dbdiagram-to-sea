@@ -6,7 +6,7 @@ use nom::multi::{many0, separated_list0};
 use nom::sequence::{delimited, preceded, terminated};
 use nom::{IResult, Parser};
 
-use crate::db_type::{ColumnEnum, ColumnEnumItem};
+use crate::db_type::column_enum::{ColumnEnum, ColumnEnumItem};
 use crate::parser::{is_ident_char, whitespace0};
 
 fn parse_ident(input:&str) -> IResult<&str,&str> {

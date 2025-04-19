@@ -9,11 +9,13 @@ use log::{error,info};
 use crate::db_type::GlobalDefinition;
 use crate::error_enum::ParserError;
 use crate::parser::column_enum::parse_enum;
+use crate::parser::relation::parse_relation;
 use crate::parser::table::parse_table;
 use crate::ParserResult;
 
 pub mod table;
 pub mod column_enum;
+pub mod relation;
 
 pub(crate) fn whitespace0(input: &str) -> IResult<&str, &str> {
     nom::character::complete::space0::<&str, nom::error::Error<&str>>(input)
@@ -29,7 +31,8 @@ pub fn parse_definition(input:&str) -> IResult<&str,GlobalDefinition>{
         multispace0,
         complete(alt((
             map(parse_table,GlobalDefinition::Table),
-            map(parse_enum, GlobalDefinition::Enum)
+            map(parse_enum, GlobalDefinition::Enum),
+            map(parse_relation, GlobalDefinition::Relation)
         )))
     );
     parser.parse(input)
