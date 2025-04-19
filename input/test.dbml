@@ -12,8 +12,14 @@ Table B as b {
 
 Table C as c{
   id int [pk]
-  name varchar
-  email varchar
+  name varchar(255)
+  email varchar(500)
+}
+
+Table D as d{
+  id int [pk]
+  name varchar(abc255)
+  email varchar(500)
 }
 
 Enum oop {

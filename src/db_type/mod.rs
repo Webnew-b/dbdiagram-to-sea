@@ -23,8 +23,14 @@ pub struct Table {
 #[derive(Debug)]
 pub struct Column{
     pub name:String,
-    pub field_type:String,
+    pub field_type:FieldType,
     pub attrs:Option<Vec<AttrEnum>>
+}
+
+#[derive(Debug)]
+pub struct FieldType {
+    pub name:String,
+    pub amount:Option<String>
 }
 
 #[derive(Debug)]
@@ -62,7 +68,7 @@ impl fmt::Display for Column {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             f,
-            "Column: \n name:{} \n type:{} \n attrs:{:?}",
+            "Column: \n name:{} \n type:{:?} \n attrs:{:?}",
             self.name,self.field_type,self.attrs
         )
     }

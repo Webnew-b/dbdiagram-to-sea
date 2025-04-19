@@ -1,12 +1,12 @@
 use nom::branch::alt;
 use nom::bytes::complete::{is_not, tag, take_while1};
 use nom::character::complete::{char, multispace0, multispace1};
-use nom::combinator::{complete, map, opt};
+use nom::combinator::{complete, map, opt, verify};
 use nom::multi::{many0, separated_list0};
 use nom::sequence::{delimited, preceded, separated_pair, terminated};
 use nom::{IResult, Parser};
 
-use crate::db_type::{AttrEnum, Column, Table};
+use crate::db_type::{AttrEnum, Column, FieldType, Table};
 use crate::parser::{is_ident_char, whitespace0};
 
 fn parse_alias(input:&str) -> IResult<&str,&str> {
@@ -24,8 +24,27 @@ fn parse_ident(input:&str) -> IResult<&str,&str> {
     take_while1(is_ident_char)(input)
 }
 
-fn parse_type(input:&str) -> IResult<&str,&str> {
-    take_while1(|c:char| c.is_alphanumeric())(input)
+fn parse_digital(input:&str) -> IResult<&str,&str> {
+    verify(
+        take_while1(|c:char| c.is_ascii_digit()),
+        |s:&str| !s.is_empty()
+    ).parse(input)
+}
+
+fn parse_type(input:&str) -> IResult<&str,FieldType> {
+    let mut res = map(
+        (
+            take_while1(|c:char| c.is_alphanumeric()),
+            opt(delimited(tag("("), parse_digital, tag(")")))
+        ),
+        |(name,amount)| {
+            FieldType {
+                name:name.to_string(),
+                amount:amount.map(String::from)
+            }
+        }
+    );
+    res.parse(input)
 }
 
 fn parse_string_value(input:&str) -> IResult<&str,&str> {
@@ -67,7 +86,7 @@ pub fn parse_column(input:&str) -> IResult<&str,Column> {
         ),
         |(name,field_type,attrs)| Column {
             name:name.to_string(),
-            field_type:field_type.to_string(),
+            field_type,
             attrs,
         });
     parser.parse(input)
