@@ -63,7 +63,7 @@ fn parse_relation_type(input:&str) -> IResult<&str,RelationEnum> {
     Ok((input,relation_enum))
 }
 
-pub fn parse_relation(input:&str) -> IResult<&str,Relation> {
+pub(crate) fn parse_relation(input:&str) -> IResult<&str,Relation> {
     let (input,_) = preceded(multispace0,tag("Ref") ).parse(input)?;
     let (input,_) = multispace1(input)?;
     let (input,name) = parse_ident(input)?;
@@ -84,7 +84,7 @@ pub fn parse_relation(input:&str) -> IResult<&str,Relation> {
     }))
 }
 
-pub fn parse_relations(input:&str) -> IResult<&str,Vec<Relation>> {
+pub(crate) fn parse_relations(input:&str) -> IResult<&str,Vec<Relation>> {
     let mut parser = many0(
             preceded(multispace0, complete(parse_relation))
         );

@@ -1,8 +1,7 @@
 use std::path::Path;
 
-use db_diagram_to_sea_orm::parser::parse_file;
 use db_diagram_to_sea_orm::tools::get_file_content;
-use db_diagram_to_sea_orm::ParserResult;
+use db_diagram_to_sea_orm::{parse_file, ParserResult};
 use log::debug;
 
 fn main() -> ParserResult<()> {

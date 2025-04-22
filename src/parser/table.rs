@@ -10,14 +10,14 @@ use crate::db_type::table::{Column, FieldType, Table};
 use crate::db_type::AttrEnum;
 use crate::parser::{is_ident_char, whitespace0};
 
-fn parse_alias(input:&str) -> IResult<&str,&str> {
+fn parse_alias(input:&str) -> IResult<&str,Option<String>> {
     let parser = opt(
         preceded(
             preceded(whitespace0, tag("as")),
             preceded(multispace1, parse_ident)
         )
     );
-    let mut a = map(parser, |opt_alias| opt_alias.unwrap_or(""));
+    let mut a = map(parser, |opt_alias| opt_alias.map(|e|e.to_string()));
     a.parse(input)
 }
 
@@ -78,7 +78,7 @@ fn parse_attr(input:&str) -> IResult<&str,Vec<AttrEnum>>{
     parser.parse(input)
 }
 
-pub fn parse_column(input:&str) -> IResult<&str,Column> {
+fn parse_column(input:&str) -> IResult<&str,Column> {
     let mut parser = map (
         (
             preceded(multispace0, parse_ident),
@@ -94,7 +94,7 @@ pub fn parse_column(input:&str) -> IResult<&str,Column> {
     parser.parse(input)
 }
 
-pub fn parse_table(input:&str) -> IResult<&str,Table> {
+pub(super) fn parse_table(input:&str) -> IResult<&str,Table> {
     let (input,_) = preceded(multispace0,tag("Table") ).parse(input)?;
     let (input,_) = multispace1(input)?;
     let (input,name) = parse_ident(input)?;
@@ -108,14 +108,14 @@ pub fn parse_table(input:&str) -> IResult<&str,Table> {
         ).parse(input)?;
 
     Ok((input,Table {
-        alias:alias.to_string(),
+        alias,
         name:name.to_string(),
         columns,
         note:None
     }))
 }
 
-pub fn parse_tables(input:&str) -> IResult<&str,Vec<Table>> {
+pub(crate) fn parse_tables(input:&str) -> IResult<&str,Vec<Table>> {
     let mut parser = many0(
             preceded(multispace0, complete(parse_table))
         );
