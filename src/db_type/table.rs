@@ -1,6 +1,6 @@
 use core::fmt;
 
-use crate::db_type::AttrEnum;
+use crate::db_type::{AttrEnum, HashName};
 
 #[derive(Debug)]
 pub struct Table {
@@ -21,6 +21,18 @@ pub struct Column{
 pub struct FieldType {
     pub name:String,
     pub amount:Option<String>
+}
+
+impl HashName for Table {
+    fn get_name(&self)-> String {
+        self.name.clone()
+    }
+}
+
+impl HashName for Column {
+    fn get_name(&self)-> String {
+        self.name.clone()
+    }
 }
 
 impl fmt::Display for Column {

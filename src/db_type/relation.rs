@@ -1,5 +1,7 @@
 use std::fmt;
 
+use crate::db_type::HashName;
+
 #[derive(Debug)]
 pub struct Relation{
     pub name:String,
@@ -27,6 +29,12 @@ pub fn get_relation_from_str(input:&str) -> Option<RelationEnum> {
         "<" => Some(RelationEnum::OneToMany),
         "<>" => Some(RelationEnum::ManyToMany),
         _ => None
+    }
+}
+
+impl HashName for Relation {
+    fn get_name(&self)-> String {
+        self.name.clone()
     }
 }
 

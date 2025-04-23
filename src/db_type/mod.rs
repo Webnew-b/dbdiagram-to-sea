@@ -19,3 +19,7 @@ pub enum AttrEnum {
     KeyValue(String,String),
 }
 
+
+pub(super) trait HashName {
+    fn get_name(&self)-> String;
+} 
