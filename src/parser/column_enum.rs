@@ -60,6 +60,7 @@ pub(crate) fn parse_enum(input:&str) -> IResult<&str,ColumnEnum> {
     }))
 }
 
+#[allow(unused)]
 pub(crate) fn parse_enums(input:&str) -> IResult<&str,Vec<ColumnEnum>> {
     let mut parser = many0(
             preceded(multispace0, complete(parse_enum))

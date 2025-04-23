@@ -84,6 +84,7 @@ pub(crate) fn parse_relation(input:&str) -> IResult<&str,Relation> {
     }))
 }
 
+#[allow(unused)]
 pub(crate) fn parse_relations(input:&str) -> IResult<&str,Vec<Relation>> {
     let mut parser = many0(
             preceded(multispace0, complete(parse_relation))

@@ -115,6 +115,7 @@ pub(super) fn parse_table(input:&str) -> IResult<&str,Table> {
     }))
 }
 
+#[allow(unused)]
 pub(crate) fn parse_tables(input:&str) -> IResult<&str,Vec<Table>> {
     let mut parser = many0(
             preceded(multispace0, complete(parse_table))
