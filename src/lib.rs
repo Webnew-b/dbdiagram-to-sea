@@ -1,18 +1,18 @@
-use crate::error_enum::ParserError;
+use crate::error_enum::{AppResult, ParserErrorKind};
 use crate::parser::parse_all;
 
 pub mod db_type;
 pub mod error_enum;
 pub mod tools;
 pub mod parser;
+pub mod validtor;
 
-pub type ParserResult<T> = Result<T,ParserError>;
 
-pub fn parse_file(input:&str) -> ParserResult<()> {
+pub fn parse_file(input:&str) -> AppResult<()> {
 
     let (_,res) = parse_all(input).map_err(|e|{
         log::error!("{}",e.to_string());
-        ParserError::ParseEnumFail
+        ParserErrorKind::ParseEnumFail
     })?;
 
 

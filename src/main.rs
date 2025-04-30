@@ -1,10 +1,11 @@
 use std::path::Path;
 
+use db_diagram_to_sea_orm::error_enum::AppResult;
 use db_diagram_to_sea_orm::tools::get_file_content;
-use db_diagram_to_sea_orm::{parse_file, ParserResult};
+use db_diagram_to_sea_orm::parse_file;
 use log::debug;
 
-fn main() -> ParserResult<()> {
+fn main() -> AppResult<()> {
     env_logger::init();
     let file_path = Path::new("input/test.dbml");
 

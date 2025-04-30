@@ -1,24 +1,80 @@
 use std::fmt;
 
+use thiserror::Error;
+
+use crate::error_enum::schema_error::SchemaErrorKind;
+
+pub(crate) mod schema_error;
+
+#[derive(Debug,Error)]
+pub enum AppErrorKind {
+    #[error("Schema error: {0} ")]
+    SchemaErrorKind(#[from] SchemaErrorKind),
+
+    #[error("Parse error: {0}")]
+    ParserErrorKind(#[from] ParserErrorKind),
+
+    #[error("Other error:{0}")]
+    Other(String)
+}
+
 #[derive(Debug)]
-pub enum ParserError {
-    Other(String),
+pub struct AppError {
+    kind:AppErrorKind,
+    source:Option<Box<dyn std::error::Error + Send + Sync>>
+}
+
+impl From<AppErrorKind> for AppError {
+    fn from(value: AppErrorKind) -> Self {
+        Self { kind: value, source: None }
+    }
+}
+
+impl From<SchemaErrorKind> for AppError {
+    fn from(value: SchemaErrorKind) -> Self {
+        Self {kind:AppErrorKind::SchemaErrorKind(value),source:None}
+    }
+}
+
+impl From<ParserErrorKind> for AppError {
+    fn from(value: ParserErrorKind) -> Self {
+        Self {kind:AppErrorKind::ParserErrorKind(value),source:None}
+    }
+}
+
+pub type AppResult<T> = std::result::Result<T,AppError>;
+
+
+#[derive(Debug)]
+pub enum ParserErrorKind {
     ParserNotFound,
     OpenFileFailed,
     ReadFileFailed,
     ParseTableFail,
     ParseEnumFail,
+
+    NameDuplicated(String),
+    ItemNameDuplicated(String,String),
 }
 
-impl fmt::Display for ParserError {
+impl fmt::Display for ParserErrorKind {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            ParserError::Other(e) => write!(f,"{}",e),
-            ParserError::ParserNotFound => write!(f,"Nothing was parsed from the file."),
-            ParserError::OpenFileFailed => write!(f,"Could not open file."),
-            ParserError::ReadFileFailed => write!(f,"Could not read file."),
-            ParserError::ParseTableFail => write!(f,"Fail to parse the table from the file."),
-            ParserError::ParseEnumFail => write!(f,"Fail to parse the enum from the file."),
+            ParserErrorKind::ParserNotFound => write!(f,"Nothing was parsed from the file."),
+            ParserErrorKind::OpenFileFailed => write!(f,"Could not open file."),
+            ParserErrorKind::ReadFileFailed => write!(f,"Could not read file."),
+            ParserErrorKind::ParseTableFail => write!(f,"Fail to parse the table from the file."),
+            ParserErrorKind::ParseEnumFail => write!(f,"Fail to parse the enum from the file."),
+                       
+            ParserErrorKind::NameDuplicated(e) => write!(f,"Duplicate element name found in file:{}",e),
+            ParserErrorKind::ItemNameDuplicated(k, v) 
+                => write!(f,"Duplicate element found in {}:{}.",k,v),
         }
     }
 }
+
+impl std::error::Error for ParserErrorKind {
+    
+}
+
+
