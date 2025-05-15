@@ -18,10 +18,18 @@ pub enum AppErrorKind {
     Other(String)
 }
 
+type GenericsError = Box<dyn std::error::Error + Send + Sync>; 
+
 #[derive(Debug)]
 pub struct AppError {
-    kind:AppErrorKind,
-    source:Option<Box<dyn std::error::Error + Send + Sync>>
+    pub kind:AppErrorKind,
+    pub source:Option<GenericsError>
+}
+
+impl AppError {
+    pub fn new(kind:AppErrorKind,source:GenericsError)->Self {
+        Self { kind, source: Some(source) }
+    }
 }
 
 impl From<AppErrorKind> for AppError {
