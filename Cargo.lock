@@ -128,6 +128,7 @@ dependencies = [
  "env_logger",
  "log",
  "nom",
+ "regex",
  "serde",
  "thiserror",
  "tokio",
