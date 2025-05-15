@@ -1,5 +1,6 @@
 use crate::error_enum::{AppResult, ParserErrorKind};
 use crate::parser::parse_all;
+use crate::validtor::validate_sturcture;
 
 pub mod db_type;
 pub mod error_enum;
@@ -16,9 +17,11 @@ pub fn parse_file(input:&str) -> AppResult<()> {
     })?;
 
 
-    for table in res {
+    for table in &res {
         log::info!("{:#?}",table);
     }
+
+    validate_sturcture(res)?;
 
     Ok(())
 }

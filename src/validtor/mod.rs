@@ -5,26 +5,21 @@ use crate::db_type::relation::Relation;
 use crate::db_type::table::Table;
 use crate::db_type::{GlobalDefinition, HashName};
 use crate::error_enum::{AppResult, ParserErrorKind};
+use crate::validtor::vailtor_schema::read_config;
+use crate::validtor::valid_enum::validate_enum;
+use crate::validtor::valid_relation::validate_relation;
+use crate::validtor::valid_table::validate_table;
 
 pub mod vailtor_schema;
 pub(crate) mod schema_enum;
 pub(crate) mod schema_table;
 pub(crate) mod schema_relation;
+pub(crate) mod valid_table;
+pub(crate) mod valid_enum;
+pub(crate) mod valid_relation;
 
 
-fn validate_relation(r:&Relation) -> AppResult<()> {
-    Ok(())
-}
-
-fn validate_enum(e:&ColumnEnum) -> AppResult<()>{
-    Ok(())
-}
-
-fn validate_table(t:&Table) -> AppResult<()>{
-    Ok(())
-}
-
-fn validate_and_colloct_duplicate_names<T:HashName>(
+fn validate_and_collect_duplicate_names<T:HashName>(
     items:&Vec<&T>,
     category:&str
     ) -> Option<String>
@@ -56,12 +51,6 @@ fn validate_name_duplicate<T:HashName>(i:&Vec<&T>) -> Vec<String> {
         .collect()
 }
 
-fn get_validate_config() -> AppResult<()> {
-    // Here must separate schema from the config and return schema ownship
-    // 这里要将校验用的schema分出来。然后返回出去
-    todo!();
-    Ok(())
-}
 
 fn validate_duplicate_name_all(validations:Vec<Option<String>>) -> AppResult<()>{
     let mut errors = Vec::new();
@@ -80,12 +69,16 @@ fn validate_duplicate_name_all(validations:Vec<Option<String>>) -> AppResult<()>
 }
 
 pub(crate) fn validate_sturcture(sturct_vec:Vec<GlobalDefinition>) -> AppResult<()> {
-    
 
+    // load configuration for schema
+    let schema_config = read_config("config/schema_config.toml")?;
+
+    // Initial validate sturcture
     let mut table_vec = Vec::<&Table>::new();
     let mut enum_vec = Vec::<&ColumnEnum>::new();
     let mut relation_vec = Vec::<&Relation>::new();
 
+    // Obtain sturcture from parse result
     for item in &sturct_vec {
         match item {
             GlobalDefinition::Table(t) => table_vec.push(t),
@@ -94,27 +87,22 @@ pub(crate) fn validate_sturcture(sturct_vec:Vec<GlobalDefinition>) -> AppResult<
         }
     }
 
-    
+    // Check if the name is dupliacated
     let validations: Vec<Option<String>> = vec![
-        validate_and_colloct_duplicate_names(&table_vec, "table_name"),
-        validate_and_colloct_duplicate_names(&enum_vec, "enum_name"),
-        validate_and_colloct_duplicate_names(&relation_vec, "relation_name"),
+        validate_and_collect_duplicate_names(&table_vec, "table_name"),
+        validate_and_collect_duplicate_names(&enum_vec, "enum_name"),
+        validate_and_collect_duplicate_names(&relation_vec, "relation_name"),
     ];
 
     validate_duplicate_name_all(validations)?;
-   
 
-    table_vec
-        .iter()
-        .try_for_each(|e| validate_table(e))?;
+    // Get the parse item name from the validate sturcture
+    let table_name_collection = get_collection_name(&table_vec);
+    let enum_name_collection = get_collection_name(&enum_vec);
 
-    enum_vec
-        .iter()
-        .try_for_each(|e| validate_enum(e))?;
-
-    relation_vec
-        .iter()
-        .try_for_each(|e| validate_relation(e))?;
-
+    // Check if the sturcture is correct.
+    validate_table(table_vec, schema_config.table,&enum_name_collection)?;
+    validate_enum(enum_vec, schema_config.column_enum,&table_name_collection)?;
+    validate_relation(relation_vec, schema_config.relation,&table_name_collection)?;
     Ok(())
 }
