@@ -22,7 +22,7 @@ pub(crate) fn read_config(file_path:&str) -> AppResult<VailtorSchema> {
         })
 }
 
-pub(crate) fn vaildate_field_from_regex
+pub(crate) fn validate_field_from_regex
     (pattern:&Regex,target:&str,type_name:String) -> AppResult<()> {
     pattern.is_match(target)
         .then(|| {()})

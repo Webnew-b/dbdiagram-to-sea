@@ -1,4 +1,6 @@
 
+use std::collections::HashSet;
+
 use regex::Regex;
 use serde::Deserialize;
 
@@ -16,8 +18,10 @@ pub(crate) struct SchemaTable {
 }
 
 pub(crate) struct SchemaTableRegex{
-    allow_name:Regex,
-    allow_column_name:Regex,
+    pub allow_name:Regex,
+    pub allow_column_name:Regex,
+    pub allow_type:HashSet<String>,
+    pub allow_column_attr:HashSet<String>,
 }
 
 impl TryFrom<SchemaTable> for SchemaTableRegex {
@@ -27,9 +31,13 @@ impl TryFrom<SchemaTable> for SchemaTableRegex {
     fn try_from(value: SchemaTable) -> Result<Self,Self::Error> {
         let allow_name = compile_regex(value.allow_name.as_str())?;
         let allow_column_name = compile_regex(value.allow_column_name.as_str())?;
+        let allow_type = value.allow_type.into_iter().collect();
+        let allow_column_attr = value.allow_column_attr.into_iter().collect();
         Ok(Self { 
             allow_name,
-            allow_column_name
+            allow_column_name,
+            allow_type,
+            allow_column_attr
         })
     }
 }
