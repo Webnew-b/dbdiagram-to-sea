@@ -86,6 +86,9 @@ pub(crate) fn validate_sturcture(sturct_vec:Vec<GlobalDefinition>) -> AppResult<
             GlobalDefinition::Relation(r) => relation_vec.push(r),
         }
     }
+    
+    // Todo Need to check if the table column name is dupliacated 
+    // And Obtain the column name for relation validation.
 
     // Check if the name is dupliacated
     let validations: Vec<Option<String>> = vec![
@@ -102,7 +105,7 @@ pub(crate) fn validate_sturcture(sturct_vec:Vec<GlobalDefinition>) -> AppResult<
 
     // Check if the sturcture is correct.
     validate_table(table_vec, schema_config.table,&enum_name_collection)?;
-    validate_enum(enum_vec, schema_config.column_enum,&table_name_collection)?;
+    validate_enum(enum_vec, schema_config.column_enum)?;
     validate_relation(relation_vec, schema_config.relation,&table_name_collection)?;
     Ok(())
 }

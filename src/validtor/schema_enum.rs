@@ -13,8 +13,8 @@ pub(crate) struct SchemaEnum {
 
 
 pub(crate) struct SchemaEnumRegex {
-    allow_name_regex:Regex,
-    allow_column_name_regex:Regex,
+    pub allow_name_regex:Regex,
+    pub allow_column_name_regex:Regex,
 }
 
 impl TryFrom<SchemaEnum> for SchemaEnumRegex {

@@ -12,8 +12,8 @@ pub(crate) struct SchemaRelation {
 }
 
 pub(crate) struct SchemaRelationRegex {
-    allow_name_regex:Regex,
-    allow_relation_name_regex:Regex,
+    pub allow_name_regex:Regex,
+    pub allow_relation_name_regex:Regex,
 }
 
 impl TryFrom<SchemaRelation> for SchemaRelationRegex {
