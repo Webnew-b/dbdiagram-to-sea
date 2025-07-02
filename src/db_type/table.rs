@@ -23,6 +23,17 @@ pub struct FieldType {
     pub amount:Option<String>
 }
 
+impl PartialEq for FieldType {
+    fn eq(&self, other: &Self) -> bool {
+        self.name == other.name && self.amount == other.amount
+    }
+}
+
+impl Eq for FieldType {
+    
+}
+
+
 impl HashName for Table {
     fn get_name(&self)-> String {
         self.name.clone()

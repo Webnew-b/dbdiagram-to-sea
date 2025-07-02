@@ -6,12 +6,13 @@ Table A{
 
 Table B as b {
   id int [pk]
-  name varchar [default:"dwadaw",de: "wwaa",dep :"wwsss"]
+  name varchar [default:"dwadaw"]
   email varchar
 }
 
 Table C as c{
   id int [pk]
+  b_id int
   name varchar(255)
   email varchar(500)
 }
@@ -24,11 +25,4 @@ Enum oop {
   wwppp 
 }
 
-Ref c_to_d: schema1.C.id < schema1.D.cId
-
-Table D as d{
-  id int [pk]
-  cId int
-  name varchar(abc255)
-  email varchar(500)
-}
+Ref C_to_B: schema1.B.id < schema2.C.b_id

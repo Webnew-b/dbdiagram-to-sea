@@ -1,0 +1,63 @@
+[table]
+allow_type=[
+  "SMALLINT",
+  "INTEGER",
+  "INT",
+  "BIGINT",
+  "DECIMAL",
+  "DECIMAL(P, S)",
+  "NUMERIC",
+  "NUMERIC(P, S)",
+  "REAL",
+  "DOUBLE PRECISION",
+  "SMALLSERIAL",
+  "SERIAL",
+  "BIGSERIAL",
+  "VARCHAR",
+  "VARCHAR(N)",
+  "CHAR",
+  "CHAR(N)",
+  "TEXT",
+  "TIMESTAMP",
+  "TIMESTAMP(P)",
+  "TIMESTAMP WITHOUT TIME ZONE",
+  "TIMESTAMPTZ",
+  "TIMESTAMPTZ(P)",
+  "TIMESTAMP WITH TIME ZONE",
+  "DATE",
+  "TIME",
+  "TIME(P)",
+  "TIME WITHOUT TIME ZONE",
+  "TIMETZ",
+  "TIMETZ(P)",
+  "TIME WITH TIME ZONE",
+  "INTERVAL",
+  "INTERVAL(P)",
+  "BOOLEAN",
+  "BOOL",
+  "JSON",
+  "JSONB",
+  "UUID",
+  "BYTEA",
+  "INET"
+]
+allow_name="^[a-zA-Z_][a-zA-Z0-9_]*$"
+allow_column_name="^[a-zA-Z_][a-zA-Z0-9_]*$"
+allow_column_attr=[
+  "pk",
+  "primary key",
+  "not null",
+  "unique",
+  "increment",
+  "null",
+  "default",
+  "note",
+]
+
+[enum]
+allow_name="^[a-zA-Z_][a-zA-Z0-9_]*$"
+allow_column_name="^[a-zA-Z_][a-zA-Z0-9_]*$"
+
+[relation]
+allow_name="^[a-zA-Z_][a-zA-Z0-9_]*$"
+allow_relation_name="^[a-zA-Z_][a-zA-Z0-9_]*$"

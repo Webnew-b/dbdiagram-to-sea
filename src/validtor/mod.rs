@@ -1,8 +1,8 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use crate::db_type::column_enum::ColumnEnum;
 use crate::db_type::relation::Relation;
-use crate::db_type::table::Table;
+use crate::db_type::table::{Column, Table};
 use crate::db_type::{GlobalDefinition, HashName};
 use crate::error_enum::{AppResult, ParserErrorKind};
 use crate::validtor::vailtor_schema::read_config;
@@ -68,7 +68,42 @@ fn validate_duplicate_name_all(validations:Vec<Option<String>>) -> AppResult<()>
     Ok(())
 }
 
-pub(crate) fn validate_sturcture(sturct_vec:Vec<GlobalDefinition>) -> AppResult<()> {
+fn validate_columns_name(columns: &[Column]) -> AppResult<()> {
+    let mut seen_names = HashSet::new();
+    
+    if let Some(duplicate_column) = 
+        columns.iter()
+            .find(|column| !seen_names.insert(&column.name)) 
+    {
+        // 如果找到了重复项，就返回错误
+        let item = format!("Column field {} is duplicated",duplicate_column.name);
+        Err(ParserErrorKind::NameDuplicated(item).into())
+    } else {
+        // 如果 find 返回 None，说明遍历完成都没找到重复项
+        Ok(())
+    }
+}
+
+fn construct_column_valid_name<'a>(
+    map:&mut HashMap<String,&'a Vec<Column>>,
+    table:&'a Table
+    ) -> AppResult<()> {
+    validate_columns_name(&table.columns)?;
+    map.entry(table.name.to_string()).or_insert(&table.columns);
+    Ok(())
+}
+
+//
+fn get_column_from_table<'table>(
+    tables:&'table [&'table Table]
+) -> AppResult<HashMap<String,&'table Vec<Column>>> {
+    let mut map:HashMap<String,&Vec<Column>> = HashMap::new();
+    tables.iter()
+        .try_for_each(|t| construct_column_valid_name(&mut map, t))?;
+    Ok(map)
+}
+
+pub(crate) fn validate_sturcture(sturct_vec:&Vec<GlobalDefinition>) -> AppResult<()> {
 
     // load configuration for schema
     let schema_config = read_config("config/schema_config.toml")?;
@@ -79,7 +114,7 @@ pub(crate) fn validate_sturcture(sturct_vec:Vec<GlobalDefinition>) -> AppResult<
     let mut relation_vec = Vec::<&Relation>::new();
 
     // Obtain sturcture from parse result
-    for item in &sturct_vec {
+    for item in sturct_vec {
         match item {
             GlobalDefinition::Table(t) => table_vec.push(t),
             GlobalDefinition::Enum(e) => enum_vec.push(e),
@@ -87,9 +122,8 @@ pub(crate) fn validate_sturcture(sturct_vec:Vec<GlobalDefinition>) -> AppResult<
         }
     }
     
-    // Todo Need to check if the table column name is dupliacated 
-    // And Obtain the column name for relation validation.
-
+    let map = get_column_from_table(&table_vec)?;
+    
     // Check if the name is dupliacated
     let validations: Vec<Option<String>> = vec![
         validate_and_collect_duplicate_names(&table_vec, "table_name"),
@@ -104,8 +138,8 @@ pub(crate) fn validate_sturcture(sturct_vec:Vec<GlobalDefinition>) -> AppResult<
     let enum_name_collection = get_collection_name(&enum_vec);
 
     // Check if the sturcture is correct.
-    validate_table(table_vec, schema_config.table,&enum_name_collection)?;
+    validate_table(&table_vec, schema_config.table,&enum_name_collection)?;
     validate_enum(enum_vec, schema_config.column_enum)?;
-    validate_relation(relation_vec, schema_config.relation,&table_name_collection)?;
+    validate_relation(relation_vec, schema_config.relation,&table_name_collection,&map)?;
     Ok(())
 }

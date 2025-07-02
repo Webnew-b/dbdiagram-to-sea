@@ -21,7 +21,13 @@ pub fn parse_file(input:&str) -> AppResult<()> {
         log::info!("{:#?}",table);
     }
 
-    validate_sturcture(res)?;
+    validate_sturcture(&res)?;
+
+    log::info!("Validation passed.");
+
+    for table in &res {
+        log::info!("{:#?}",table);
+    }
 
     Ok(())
 }

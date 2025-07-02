@@ -43,7 +43,7 @@ fn validate_table_column(
         || enum_names.contains(&column_attr);
 
     if !attr_res {
-        let msg = format!("Column type on {}",column.name);
+        let msg = format!("Column type on {},by {}",column.name,&column_attr);
         return Err(SchemaErrorKind::NoContained { colum_type: msg }.into());
     }
 
@@ -72,7 +72,7 @@ fn validate_table_name(
 }
 
 pub(crate) fn validate_table(
-    table:Vec<&Table>,
+    table:&Vec<&Table>,
     schema_table:SchemaTable,
     enum_names:&[String]
     ) -> AppResult<()> {
