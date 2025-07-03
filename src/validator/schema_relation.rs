@@ -3,7 +3,7 @@ use regex::Regex;
 use serde::Deserialize;
 
 use crate::error_enum::AppError;
-use crate::validtor::vailtor_schema::compile_regex;
+use crate::validator::vailtor_schema::compile_regex;
 
 #[derive(Deserialize,Debug)]
 pub(crate) struct SchemaRelation {

@@ -4,8 +4,8 @@ use crate::db_type::table::{Column, Table};
 use crate::db_type::AttrEnum;
 use crate::error_enum::schema_error::SchemaErrorKind;
 use crate::error_enum::AppResult;
-use crate::validtor::schema_table::{SchemaTable, SchemaTableRegex};
-use crate::validtor::vailtor_schema::validate_field_from_regex;
+use crate::validator::schema_table::{SchemaTable, SchemaTableRegex};
+use crate::validator::vailtor_schema::validate_field_from_regex;
 
 fn validate_column_attr(
     attr:&AttrEnum,schema_attr:&HashSet<String>

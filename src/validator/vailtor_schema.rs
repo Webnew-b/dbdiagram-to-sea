@@ -7,9 +7,9 @@ use serde::Deserialize;
 use crate::error_enum::schema_error::SchemaErrorKind;
 use crate::error_enum::{AppError, AppResult};
 use crate::tools::get_file_content;
-use crate::validtor::schema_enum::SchemaEnum;
-use crate::validtor::schema_relation::SchemaRelation;
-use crate::validtor::schema_table::SchemaTable;
+use crate::validator::schema_enum::SchemaEnum;
+use crate::validator::schema_relation::SchemaRelation;
+use crate::validator::schema_table::SchemaTable;
 
 pub(crate) fn read_config(file_path:&str) -> AppResult<VailtorSchema> {
     let path = PathBuf::from_str(file_path).unwrap();
