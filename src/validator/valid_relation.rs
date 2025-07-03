@@ -6,7 +6,7 @@ use crate::db_type::table::Column;
 use crate::error_enum::schema_error::SchemaErrorKind;
 use crate::error_enum::AppResult;
 use crate::validator::schema_relation::{SchemaRelation, SchemaRelationRegex};
-use crate::validator::vailtor_schema::validate_field_from_regex;
+use crate::validator::valid_schema::validate_field_from_regex;
 
 fn validate_relation_item(
     relation:&Relation,

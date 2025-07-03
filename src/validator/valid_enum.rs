@@ -2,7 +2,7 @@
 use crate::db_type::column_enum::ColumnEnum;
 use crate::error_enum::AppResult;
 use crate::validator::schema_enum::{SchemaEnum, SchemaEnumRegex};
-use crate::validator::vailtor_schema::validate_field_from_regex;
+use crate::validator::valid_schema::validate_field_from_regex;
 
 
 fn validate_enum_item(

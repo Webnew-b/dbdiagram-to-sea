@@ -5,12 +5,12 @@ use crate::db_type::relation::Relation;
 use crate::db_type::table::{Column, Table};
 use crate::db_type::{GlobalDefinition, HashName};
 use crate::error_enum::{AppResult, ParserErrorKind};
-use crate::validator::vailtor_schema::read_config;
+use crate::validator::valid_schema::read_config;
 use crate::validator::valid_enum::validate_enum;
 use crate::validator::valid_relation::validate_relation;
 use crate::validator::valid_table::validate_table;
 
-pub mod vailtor_schema;
+pub mod valid_schema;
 pub(crate) mod schema_enum;
 pub(crate) mod schema_table;
 pub(crate) mod schema_relation;

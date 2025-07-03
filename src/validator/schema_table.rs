@@ -6,7 +6,7 @@ use serde::Deserialize;
 
 use crate::error_enum::schema_error::SchemaErrorKind;
 use crate::error_enum::{AppError, AppResult};
-use crate::validator::vailtor_schema::compile_regex;
+use crate::validator::valid_schema::compile_regex;
 
 
 #[derive(Deserialize,Debug)]
