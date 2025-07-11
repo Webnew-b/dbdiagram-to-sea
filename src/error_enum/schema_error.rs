@@ -32,5 +32,11 @@ pub enum SchemaErrorKind {
     RelationColumnNotEq {
         from:String,
         to:String,
+    },
+
+    #[error("Relation schema doesn't equal.from:{from},to:{to}")]
+    RelationSchemaNotEq {
+        from:String,
+        to:String,
     }
 }

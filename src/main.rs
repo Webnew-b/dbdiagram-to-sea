@@ -2,7 +2,7 @@ use std::path::Path;
 
 use db_diagram_to_sea_orm::error_enum::AppResult;
 use db_diagram_to_sea_orm::tools::get_file_content;
-use db_diagram_to_sea_orm::parse_file;
+use db_diagram_to_sea_orm::{generate_file, parse_file};
 use log::debug;
 
 fn main() -> AppResult<()> {
@@ -14,8 +14,9 @@ fn main() -> AppResult<()> {
 
     debug!("{}",file_content_static);
 
-    parse_file(file_content_static)?;
-    
+    let res = parse_file(file_content_static)?;
+
+    generate_file(res)?;
     Ok(())
 }
 

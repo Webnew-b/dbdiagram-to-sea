@@ -2,9 +2,11 @@ use std::fmt;
 
 use thiserror::Error;
 
+use crate::error_enum::generation_error::GenerationErrorKind;
 use crate::error_enum::schema_error::SchemaErrorKind;
 
 pub(crate) mod schema_error;
+pub(crate) mod generation_error;
 
 #[derive(Debug,Error)]
 pub enum AppErrorKind {
@@ -13,6 +15,9 @@ pub enum AppErrorKind {
 
     #[error("Parse error: {0}")]
     ParserErrorKind(#[from] ParserErrorKind),
+
+    #[error("Generate error: {0}")]
+    GenerationErrorKind(#[from] GenerationErrorKind),
 
     #[error("Other error:{0}")]
     Other(String)
@@ -47,6 +52,12 @@ impl From<SchemaErrorKind> for AppError {
 impl From<ParserErrorKind> for AppError {
     fn from(value: ParserErrorKind) -> Self {
         Self {kind:AppErrorKind::ParserErrorKind(value),source:None}
+    }
+}
+
+impl From<GenerationErrorKind> for AppError {
+    fn from(value: GenerationErrorKind) -> Self {
+        Self {kind:AppErrorKind::GenerationErrorKind(value),source:None}
     }
 }
 

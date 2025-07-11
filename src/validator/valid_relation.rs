@@ -19,6 +19,22 @@ fn validate_relation_item(
         relation.name.as_str(), 
         "relation name".to_string())?;
 
+    if &relation.from_schema != &relation.to_schema {
+        let ret_from_schema = if let Some(s) = &relation.from_schema {
+            s.clone()
+        } else {
+            "None".to_string()
+        };
+
+        let ret_to_schema = if let Some(s) = &relation.to_schema {
+            s.clone()
+        } else {
+            "None".to_string()
+        };
+        return Err(SchemaErrorKind::RelationSchemaNotEq { 
+            from: ret_from_schema, to: ret_to_schema 
+        }.into());
+    }
     
     table_names.contains(&relation.from_table)
         .then_some(())

@@ -25,4 +25,4 @@ Enum oop {
   wwppp 
 }
 
-Ref C_to_B: schema1.B.id < schema2.C.b_id
+Ref C_to_B: B.id < C.b_id
