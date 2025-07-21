@@ -4,8 +4,7 @@ use std::collections::HashSet;
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::error_enum::schema_error::SchemaErrorKind;
-use crate::error_enum::{AppError, AppResult};
+use crate::error_enum::AppError;
 use crate::validator::valid_schema::compile_regex;
 
 
@@ -42,21 +41,3 @@ impl TryFrom<SchemaTable> for SchemaTableRegex {
     }
 }
 
-impl SchemaTable {
-
-    pub fn check_colmun_type(&self,target:String) -> AppResult<()> {
-        let res = self.allow_type.contains(&target.to_uppercase());
-        if !res {
-            return Err(SchemaErrorKind::NoContained { colum_type:target }.into());
-        }
-        Ok(())
-    }
-
-    pub fn check_colmun_attr(&self,target:String) -> AppResult<()> {
-        let res = self.allow_column_attr.contains(&target.to_uppercase());
-        if !res {
-            return Err(SchemaErrorKind::NoContained { colum_type:target }.into());
-        }
-        Ok(())
-    }
-}

@@ -2,7 +2,7 @@ use core::fmt;
 
 use crate::db_type::{AttrEnum, HashName};
 
-#[derive(Debug)]
+#[derive(Debug,PartialEq, Eq)]
 pub struct Table {
     pub alias:Option<String>,
     pub name:String,
@@ -10,7 +10,7 @@ pub struct Table {
     pub note:Option<String>
 }
 
-#[derive(Debug)]
+#[derive(Debug,PartialEq, Eq)]
 pub struct Column{
     pub name:String,
     pub field_type:FieldType,

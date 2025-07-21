@@ -35,7 +35,7 @@ fn parse_digital(input:&str) -> IResult<&str,&str> {
 fn parse_type(input:&str) -> IResult<&str,FieldType> {
     let mut res = map(
         (
-            take_while1(|c:char| c.is_alphanumeric()),
+            parse_ident,
             opt(delimited(tag("("), parse_digital, tag(")")))
         ),
         |(name,amount)| {
@@ -48,13 +48,22 @@ fn parse_type(input:&str) -> IResult<&str,FieldType> {
     res.parse(input)
 }
 
-fn parse_string_value(input:&str) -> IResult<&str,&str> {
-    delimited(char('\"'),is_not("\""), char('\"')).parse(input)
+fn parse_string_value(input: &str) -> IResult<&str, &str> {
+    alt((
+        delimited(char('\"'), is_not("\""), char('\"')), // Handles double quotes
+        delimited(char('\''), is_not("'"), char('\'')),  // Handles single quotes
+        delimited(char('`'), is_not("`"), char('`')),    // Handles backticks
+    ))
+    .parse(input)
 }
 
 fn parse_attr_item(input:&str)-> IResult<&str,AttrEnum> {
     preceded(multispace0, 
         alt((
+            map(
+                tag("not null"),
+                |_| AttrEnum::Sigle("not null".to_string())
+            ),
             map(
                 separated_pair(
                     parse_ident, 
@@ -121,4 +130,141 @@ pub(crate) fn parse_tables(input:&str) -> IResult<&str,Vec<Table>> {
             preceded(multispace0, complete(parse_table))
         );
     parser.parse(input)
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*; // Import everything from the parent module
+
+    #[test]
+    fn test_parse_full_user_table() {
+        // The input string to be parsed.
+        // Using a raw string literal r#"..."# is convenient for multi-line strings with quotes.
+        let table_definition = r#"
+        Table user {
+            id BIGSERIAL [pk]
+            username varchar(255) [not null, note: "用户名"]
+            email varchar(255) [not null, note: "邮箱，用于登录"]
+
+            avatar varchar(255) [note: "头像URL (MVP阶段可简化处理或非强制)"]
+            gender user_gender [default: 'prefer_not_to_say', note:"用户性别 (MVP阶段可简化处理或非强制)"]
+            introduce varchar(300) [note: "用户简介 (MVP阶段可简化处理或非强制)"]
+            is_show bool [default: false, note: "是否公开显示个人资料 (MVP阶段可简化处理或非强制)"]
+
+            is_delete bool [default: false, note: "软删除标志"]
+            status userStatus [default: 'active', note: "用户账户状态"]
+
+            createTime timestamp [default: `now()`, note: "创建时间"]
+            updateTime timestamp [note: "更新时间"]
+        }
+        "#;
+
+        // The expected structure that the parser should produce.
+        // We build this manually to compare with the parser's output.
+        let expected = Table {
+            name: "user".to_string(),
+            alias: None,
+            note: None,
+            columns: vec![
+                Column {
+                    name: "id".to_string(),
+                    field_type: FieldType { name: "BIGSERIAL".to_string(), amount: None },
+                    attrs: Some(vec![AttrEnum::Sigle("pk".to_string())])
+                },
+                Column {
+                    name: "username".to_string(),
+                    field_type: FieldType { name: "varchar".to_string(), amount: Some("255".to_string()) },
+                    attrs: Some(vec![
+                        AttrEnum::Sigle("not null".to_string()),
+                        AttrEnum::KeyValue("note".to_string(), "用户名".to_string())
+                    ])
+                },
+                Column {
+                    name: "email".to_string(),
+                    field_type: FieldType { name: "varchar".to_string(), amount: Some("255".to_string()) },
+                    attrs: Some(vec![
+                        AttrEnum::Sigle("not null".to_string()),
+                        AttrEnum::KeyValue("note".to_string(), "邮箱，用于登录".to_string())
+                    ])
+                },
+                Column {
+                    name: "avatar".to_string(),
+                    field_type: FieldType { name: "varchar".to_string(), amount: Some("255".to_string()) },
+                    attrs: Some(vec![AttrEnum::KeyValue("note".to_string(), "头像URL (MVP阶段可简化处理或非强制)".to_string())])
+                },
+                Column {
+                    name: "gender".to_string(),
+                    field_type: FieldType { name: "user_gender".to_string(), amount: None },
+                    attrs: Some(vec![
+                        AttrEnum::KeyValue("default".to_string(), "prefer_not_to_say".to_string()),
+                        AttrEnum::KeyValue("note".to_string(), "用户性别 (MVP阶段可简化处理或非强制)".to_string())
+                    ])
+                },
+                Column {
+                    name: "introduce".to_string(),
+                    field_type: FieldType { name: "varchar".to_string(), amount: Some("300".to_string()) },
+                    attrs: Some(vec![AttrEnum::KeyValue("note".to_string(), "用户简介 (MVP阶段可简化处理或非强制)".to_string())])
+                },
+                Column {
+                    name: "is_show".to_string(),
+                    field_type: FieldType { name: "bool".to_string(), amount: None },
+                    attrs: Some(vec![
+                        AttrEnum::KeyValue("default".to_string(), "false".to_string()),
+                        AttrEnum::KeyValue("note".to_string(), "是否公开显示个人资料 (MVP阶段可简化处理或非强制)".to_string())
+                    ])
+                },
+                Column {
+                    name: "is_delete".to_string(),
+                    field_type: FieldType { name: "bool".to_string(), amount: None },
+                    attrs: Some(vec![
+                        AttrEnum::KeyValue("default".to_string(), "false".to_string()),
+                        AttrEnum::KeyValue("note".to_string(), "软删除标志".to_string())
+                    ])
+                },
+                Column {
+                    name: "status".to_string(),
+                    field_type: FieldType { name: "userStatus".to_string(), amount: None },
+                    attrs: Some(vec![
+                        AttrEnum::KeyValue("default".to_string(), "active".to_string()),
+                        AttrEnum::KeyValue("note".to_string(), "用户账户状态".to_string())
+                    ])
+                },
+                Column {
+                    name: "createTime".to_string(),
+                    field_type: FieldType { name: "timestamp".to_string(), amount: None },
+                    attrs: Some(vec![
+                        AttrEnum::KeyValue("default".to_string(), "now()".to_string()),
+                        AttrEnum::KeyValue("note".to_string(), "创建时间".to_string())
+                    ])
+                },
+                Column {
+                    name: "updateTime".to_string(),
+                    field_type: FieldType { name: "timestamp".to_string(), amount: None },
+                    attrs: Some(vec![AttrEnum::KeyValue("note".to_string(), "更新时间".to_string())])
+                },
+            ]
+        };
+
+        // Run the parser.
+        let result = parse_table(table_definition);
+
+        let result = match result {
+            Ok(e) => e,
+            Err(e) => {
+                log::debug!("{}",e);
+                return ();
+            },
+        };
+
+        // Assert that the parsing was successful.
+
+        // Extract the parsed data.
+        let (remaining_input, parsed_table) = result;
+
+        // Assert that the entire input was consumed.
+        assert!(remaining_input.trim().is_empty());
+
+        // Assert that the parsed table is exactly what we expected.
+        assert_eq!(parsed_table, expected);
+    }
 }

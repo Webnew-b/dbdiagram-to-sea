@@ -13,7 +13,7 @@ pub enum GlobalDefinition {
     Relation(Relation)
 }
 
-#[derive(Debug)]
+#[derive(Debug,PartialEq, Eq)]
 pub enum AttrEnum {
     Sigle(String),
     KeyValue(String,String),

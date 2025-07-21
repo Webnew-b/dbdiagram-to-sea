@@ -75,11 +75,11 @@ fn validate_columns_name(columns: &[Column]) -> AppResult<()> {
         columns.iter()
             .find(|column| !seen_names.insert(&column.name)) 
     {
-        // 如果找到了重复项，就返回错误
+        //Return parse error when it find the duplication
         let item = format!("Column field {} is duplicated",duplicate_column.name);
         Err(ParserErrorKind::NameDuplicated(item).into())
     } else {
-        // 如果 find 返回 None，说明遍历完成都没找到重复项
+        // Return Ok when it doesn't find the dupliaction. 
         Ok(())
     }
 }
@@ -128,7 +128,6 @@ pub(crate) fn validate_sturcture(sturct_vec:&Vec<GlobalDefinition>) -> AppResult
     let validations: Vec<Option<String>> = vec![
         validate_and_collect_duplicate_names(&table_vec, "table_name"),
         validate_and_collect_duplicate_names(&enum_vec, "enum_name"),
-        validate_and_collect_duplicate_names(&relation_vec, "relation_name"),
     ];
 
     validate_duplicate_name_all(validations)?;

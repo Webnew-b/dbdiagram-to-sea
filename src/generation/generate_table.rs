@@ -13,7 +13,7 @@ fn match_col_attr_sigle(s:&str) -> String {
 fn match_col_attr_kv(k:&str,v:&str) -> String {
     //todo check all KeyValue of column attrible
     match k {
-        "default" => format!("{} {}",k,v),
+        "default" => format!("{} '{}'",k,v),
         "note" | _ => String::new(),
     }
 }
@@ -40,23 +40,28 @@ fn create_col_type_sql(ft:&FieldType)->String {
 
 fn create_col_sql(column:&Column) -> String {
     let col_type = create_col_type_sql(&column.field_type);
-    match column.attrs.as_ref() {
+    let res = match column.attrs.as_ref() {
         Some(a) => {
             let col_attr = create_col_attr_sql(a);
             format!("{} {} {}",column.name,col_type,col_attr)
         },
         None => format!("{} {}",column.name,col_type),
-    }
+    };
+    res.split_whitespace().collect::<Vec<&str>>().join(" ")
 }
 
 fn create_up_sql(table:&Table) -> String {
-    let mut sql = format!("CREATE TABLE IF NOT EXISTS \"{}\"",table.name);
-    sql.push_str("(\n");
-    let col_sql = table.columns.iter()
+    let col_sqls: Vec<String> = table.columns.iter()
         .map(create_col_sql)
-        .fold(String::new(), |acc,i| format!("{}\n{}",acc,i));
-    sql.push_str(col_sql.as_str());
-    sql
+        .collect();
+
+    let columns_str = col_sqls.join(",\n");
+
+    format!(
+        "CREATE TABLE IF NOT EXISTS \"{}\" (\n{}\n);",
+        table.name,
+        columns_str
+    )
 }
 
 fn create_down_sql(table:&Table) -> String {

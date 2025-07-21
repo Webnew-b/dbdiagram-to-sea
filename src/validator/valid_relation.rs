@@ -16,7 +16,7 @@ fn validate_relation_item(
 ) -> AppResult<()>{
     validate_field_from_regex(
         &schema.allow_name_regex, 
-        relation.name.as_str(), 
+        format!("{}_with_{}",relation.from_table,relation.from_column).as_str(), 
         "relation name".to_string())?;
 
     if &relation.from_schema != &relation.to_schema {

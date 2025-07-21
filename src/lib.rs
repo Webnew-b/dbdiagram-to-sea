@@ -13,10 +13,12 @@ pub mod generation;
 
 
 pub fn parse_file(input:&str) -> AppResult<Vec<GlobalDefinition>> {
-    let (_,res) = parse_all(input).map_err(|e|{
+    let (e,res) = parse_all(input).map_err(|e|{
         log::error!("{}",e.to_string());
         ParserErrorKind::ParseEnumFail
     })?;
+
+    log::debug!("last：{}",e);
 
 
     for table in &res {

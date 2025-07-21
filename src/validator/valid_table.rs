@@ -40,7 +40,7 @@ fn validate_table_column(
     let column_attr = column.field_type.name.to_uppercase();
 
     let attr_res = schema.allow_type.contains(&column_attr) 
-        || enum_names.contains(&column_attr);
+        || enum_names.contains(&column.field_type.name);
 
     if !attr_res {
         let msg = format!("Column type on {},by {}",column.name,&column_attr);

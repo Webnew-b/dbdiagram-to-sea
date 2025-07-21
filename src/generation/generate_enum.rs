@@ -4,10 +4,13 @@ use crate::generation::Migration;
 fn create_up_sql(e:&ColumnEnum) -> String {
     let mut enum_item_sql = e.item.iter()
         .fold("(".to_string(), |mut acc,item|{ 
+            acc.push_str("\"");
             acc.push_str(item.name.as_str());
+            acc.push_str("\"");
             acc.push_str(",");
             acc
         });
+    enum_item_sql.pop();
     enum_item_sql.push_str(")");
 
     let res = format!("CREATE TYPE {} AS ENUM {};",e.name,enum_item_sql);
