@@ -13,12 +13,12 @@ fn create_up_sql(e:&ColumnEnum) -> String {
     enum_item_sql.pop();
     enum_item_sql.push_str(")");
 
-    let res = format!("CREATE TYPE {} AS ENUM {};",e.name,enum_item_sql);
+    let res = format!("CREATE TYPE \"{}\" AS ENUM {};",e.name,enum_item_sql);
     res
 }
 
 fn create_down_sql(name:&str) -> String {
-    format!("DROP TYPE IF EXISTS {};",name)
+    format!("DROP TYPE IF EXISTS \"{}\";",name)
 }
 
 pub(crate) fn generate_enums_sql(enums:Vec<ColumnEnum>) 

@@ -52,7 +52,7 @@ pub(crate) struct VailtorSchema {
     pub table:SchemaTable,
     #[serde(rename = "enum")]
     pub column_enum:SchemaEnum,
-    pub relation:SchemaRelation
+    pub relation:SchemaRelation,
 }
 
 

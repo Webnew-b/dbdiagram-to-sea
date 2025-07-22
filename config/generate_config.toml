@@ -1,0 +1,78 @@
+[default_value]
+
+needs_quotes = [
+  # --- 字符类型 ---
+  "text",
+  "varchar",
+  "character varying",
+  "char",
+  "character",
+
+  # --- 日期和时间类型 ---
+  "timestamp",
+  "timestamp without time zone",
+  "timestamptz",
+  "timestamp with time zone",
+  "date",
+  "time",
+  "time without time zone",
+  "timetz",
+  "time with time zone",
+  "interval",
+
+  # --- JSON 类型 ---
+  "json",
+  "jsonb",
+
+  # --- UUID 类型 ---
+  "uuid",
+
+  # --- 网络地址类型 ---
+  "inet",
+  "cidr",
+  "macaddr",
+  "macaddr8",
+
+  # --- XML 类型 ---
+  "xml",
+
+  # --- 其他类型 ---
+  "enum",      # 用户自定义的枚举类型
+  "point",     # 几何类型
+  "line",
+  "lseg",
+  "box",
+  "path",
+  "polygon",
+  "circle",
+  "array"      # 任何数组类型，例如 integer[], text[], jsonb[]
+]
+
+no_quotes = [
+  # --- 数字类型 ---
+  "integer",
+  "int",
+  "int4",
+  "smallint",
+  "int2",
+  "bigint",
+  "int8",
+  "decimal",
+  "numeric",
+  "real",
+  "float4",
+  "double precision",
+  "float8",
+
+  # --- 序列伪类型 (通常由数据库自动管理) ---
+  "serial",
+  "serial4",
+  "smallserial",
+  "serial2",
+  "bigserial",
+  "serial8",
+
+  # --- 布尔类型 ---
+  "boolean",
+  "bool"
+]

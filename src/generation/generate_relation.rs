@@ -6,10 +6,10 @@ fn create_up_sql(r:&Relation,name:&str) -> String {
     match r.relation {
         RelationEnum::ManyToOne | RelationEnum::OneToOne =>{ 
             format!(r#"
-        ALTER TABLE {}
+        ALTER TABLE "{}"
         ADD CONSTRAINT {}
         FOREIGN KEY ({}) 
-        REFERENCES {} ({})
+        REFERENCES "{}" ("{}")
         {};
         "#,
             r.from_table,
@@ -22,10 +22,10 @@ fn create_up_sql(r:&Relation,name:&str) -> String {
 
         RelationEnum::OneToMany => {
         format!(r#"
-        ALTER TABLE {}
-        ADD CONSTRAINT {}
-        FOREIGN KEY ({}) 
-        REFERENCES {} ({})
+        ALTER TABLE "{}"
+        ADD CONSTRAINT "{}"
+        FOREIGN KEY ("{}") 
+        REFERENCES "{}" ("{}")
         {};
         "#,
             r.to_table,
@@ -47,11 +47,11 @@ fn create_up_sql(r:&Relation,name:&str) -> String {
 fn create_down_sql(r:&Relation,name:&str) -> String {
     match r.relation {
         RelationEnum::OneToMany => 
-            format!("ALTER TABLE {} DROP CONSTRAINT {};",r.to_table,name),
+            format!("ALTER TABLE \"{}\" DROP CONSTRAINT {};",r.to_table,name),
         RelationEnum::OneToOne => 
-            format!("ALTER TABLE {} DROP CONSTRAINT {};",r.from_table,name),
+            format!("ALTER TABLE \"{}\" DROP CONSTRAINT {};",r.from_table,name),
         RelationEnum::ManyToOne => 
-            format!("ALTER TABLE {} DROP CONSTRAINT {};",r.from_table,name),
+            format!("ALTER TABLE \"{}\" DROP CONSTRAINT {};",r.from_table,name),
         RelationEnum::ManyToMany => 
             String::new(),
     }
@@ -77,7 +77,9 @@ fn create_relation_action(r:&Relation) -> String {
     return sql;
 }
 
-pub(crate) fn generate_relation_sqls(relation:Vec<Relation>) 
+pub(crate) fn generate_relation_sqls(
+    relation:Vec<Relation>,
+) 
     -> Vec<Migration> 
 {
     relation.iter()

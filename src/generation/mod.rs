@@ -12,6 +12,7 @@ use crate::error_enum::AppResult;
 use crate::generation::generate_enum::generate_enums_sql;
 use crate::generation::generate_relation::generate_relation_sqls;
 use crate::generation::generate_table::generation_table_sqls;
+use crate::DefaultValue;
 
 pub mod generate_enum;
 pub mod generate_table;
@@ -74,7 +75,11 @@ fn create_migrate_file(
     Ok(())
 }
 
-pub fn generate_migrate_file(structure:Vec<GlobalDefinition>)-> AppResult<()> {
+pub fn generate_migrate_file(
+    structure:Vec<GlobalDefinition>,
+    default_config:DefaultValue
+)-> AppResult<()> {
+    let mut default_config = default_config;
     let mut file_template = Tera::default();
     file_template.add_template_file(
         "templates/migrate_template.rs.txt", 
@@ -86,9 +91,18 @@ pub fn generate_migrate_file(structure:Vec<GlobalDefinition>)-> AppResult<()> {
         )
     })?;
     let (table,column_enum,relation) = separate_gobal_defination(structure)?;
+
+    let enum_type = column_enum
+        .iter()
+        .map(|c|{
+            c.name.to_string()
+        }).collect();
+
+    default_config.needs_quotes = [default_config.needs_quotes,enum_type].concat();
+
     let enum_sqls = generate_enums_sql(column_enum);
     let relation_sqls = generate_relation_sqls(relation);
-    let table_sqls = generation_table_sqls(table);
+    let table_sqls = generation_table_sqls(table,default_config);
 
     create_migrate_file(enum_sqls, &file_template)?;
     create_migrate_file(table_sqls, &file_template)?;
