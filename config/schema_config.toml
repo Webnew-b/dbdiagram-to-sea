@@ -5,34 +5,39 @@ allow_type=[
   "INT",
   "BIGINT",
   "DECIMAL",
-  "DECIMAL(P, S)",
+
   "NUMERIC",
-  "NUMERIC(P, S)",
+
   "REAL",
   "DOUBLE PRECISION",
   "SMALLSERIAL",
   "SERIAL",
   "BIGSERIAL",
+
   "VARCHAR",
-  "VARCHAR(N)",
   "CHAR",
-  "CHAR(N)",
+
   "TEXT",
+
   "TIMESTAMP",
-  "TIMESTAMP(P)",
+
   "TIMESTAMP WITHOUT TIME ZONE",
+
   "TIMESTAMPTZ",
-  "TIMESTAMPTZ(P)",
+
   "TIMESTAMP WITH TIME ZONE",
   "DATE",
+
   "TIME",
-  "TIME(P)",
+
   "TIME WITHOUT TIME ZONE",
+
   "TIMETZ",
-  "TIMETZ(P)",
+
   "TIME WITH TIME ZONE",
+
   "INTERVAL",
-  "INTERVAL(P)",
+
   "BOOLEAN",
   "BOOL",
   "JSON",
