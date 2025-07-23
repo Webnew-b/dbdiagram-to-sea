@@ -1,4 +1,6 @@
 use std::fs;
+use std::thread::sleep;
+use std::time::Duration;
 
 use chrono::{DateTime, Utc};
 use tera::{Context, Tera};
@@ -105,7 +107,9 @@ pub fn generate_migrate_file(
     let table_sqls = generation_table_sqls(table,default_config);
 
     create_migrate_file(enum_sqls, &file_template)?;
+    sleep(Duration::from_secs(1));
     create_migrate_file(table_sqls, &file_template)?;
+    sleep(Duration::from_secs(1));
     create_migrate_file(relation_sqls, &file_template)?;
     Ok(())
 }
