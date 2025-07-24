@@ -1,5 +1,4 @@
-use std::path::PathBuf;
-use std::str::FromStr;
+use std::path::Path;
 
 use regex::Regex;
 use serde::Deserialize;
@@ -11,10 +10,8 @@ use crate::validator::schema_enum::SchemaEnum;
 use crate::validator::schema_relation::SchemaRelation;
 use crate::validator::schema_table::SchemaTable;
 
-pub(crate) fn read_config(file_path:&str) -> AppResult<VailtorSchema> {
-    let path = PathBuf::from_str(file_path).unwrap();
-        
-    let config_string = get_file_content(path.as_path())?;
+pub(crate) fn read_config(file_path:&Path) -> AppResult<VailtorSchema> {
+    let config_string = get_file_content(file_path)?;
 
     toml::from_str::<VailtorSchema>(config_string.as_str())
         .map_err(|e|{

@@ -1,4 +1,5 @@
 use std::collections::{HashMap, HashSet};
+use std::path::Path;
 
 use crate::db_type::column_enum::ColumnEnum;
 use crate::db_type::relation::Relation;
@@ -103,10 +104,13 @@ fn get_column_from_table<'table>(
     Ok(map)
 }
 
-pub(crate) fn validate_sturcture(sturct_vec:&Vec<GlobalDefinition>) -> AppResult<()> {
+pub(crate) fn validate_sturcture(
+    sturct_vec:&Vec<GlobalDefinition>,
+    schema_config:&Path,
+) -> AppResult<()> {
 
     // load configuration for schema
-    let schema_config = read_config("config/schema_config.toml")?;
+    let schema_config = read_config(schema_config)?;
 
     // Initial validate sturcture
     let mut table_vec = Vec::<&Table>::new();

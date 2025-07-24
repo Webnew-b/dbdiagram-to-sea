@@ -4,9 +4,9 @@ use crate::generation::Migration;
 fn create_up_sql(e:&ColumnEnum) -> String {
     let mut enum_item_sql = e.item.iter()
         .fold("(".to_string(), |mut acc,item|{ 
-            acc.push_str("\"");
+            acc.push_str("'");
             acc.push_str(item.name.as_str());
-            acc.push_str("\"");
+            acc.push_str("'");
             acc.push_str(",");
             acc
         });

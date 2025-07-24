@@ -1,4 +1,5 @@
 use std::fs;
+use std::path::Path;
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -43,18 +44,14 @@ fn separate_gobal_defination(structure:Vec<GlobalDefinition>)
     Ok((table,column_enum,relation))
 }
 
-fn create_file(content:String,file_name:String) -> AppResult<()> {
-    fs::create_dir_all("output")
-        .map_err(|e|{
-        log::error!("{}",e.to_string());
-        GenerationErrorKind::CouldNotCreateFolder("output".to_string())
-    })?;
+fn create_file(content:String,file_name:String,output_path:&Path) -> AppResult<()> {
     let now:DateTime<Utc> = Utc::now();
     let file_name = format!("m{}_{}",now.format("%Y%m%d_%H%M%S"),file_name);
-    let output_path = format!("output/{}.rs",file_name);
+    let file_name = format!("{}.rs",file_name);
+    let output_path = output_path.join(file_name);
     fs::write(output_path.clone(), content).map_err(|e|{
         log::error!("{}",e.to_string());
-        GenerationErrorKind::CouldNoteCreateFile(output_path)
+        GenerationErrorKind::CouldNoteCreateFile(output_path.display().to_string())
     })?;
     Ok(())
 }
@@ -62,6 +59,7 @@ fn create_file(content:String,file_name:String) -> AppResult<()> {
 fn create_migrate_file(
     sqls:Vec<Migration>,
     t:&Tera,
+    output_path:&Path
 ) -> AppResult<()> { 
     for m in sqls {
         let mut context = Context::new();
@@ -72,19 +70,15 @@ fn create_migrate_file(
                 log::error!("{}",e.to_string());
                 GenerationErrorKind::CouldNoteRenderContext
             })?;
-        create_file(rendered_code,m.name)?;
+        create_file(rendered_code,m.name,output_path)?;
     }
     Ok(())
 }
 
-pub fn generate_migrate_file(
-    structure:Vec<GlobalDefinition>,
-    default_config:DefaultValue
-)-> AppResult<()> {
-    let mut default_config = default_config;
+fn create_file_template_by_file(p:&Path)->AppResult<Tera> {
     let mut file_template = Tera::default();
     file_template.add_template_file(
-        "templates/migrate_template.rs.txt", 
+        p,
         Some("migrate_template")
     ).map_err(|e| {
         log::error!("{}",e.to_string());
@@ -92,6 +86,17 @@ pub fn generate_migrate_file(
             "templates/migrate_template.rs.txt".to_string()
         )
     })?;
+    Ok(file_template)
+}
+
+pub fn generate_migrate_file(
+    structure:Vec<GlobalDefinition>,
+    default_config:DefaultValue,
+    template_path:&Path,
+    output_path:&Path,
+)-> AppResult<()> {
+    let mut default_config = default_config;
+    let file_template = create_file_template_by_file(template_path)?;
     let (table,column_enum,relation) = separate_gobal_defination(structure)?;
 
     let enum_type = column_enum
@@ -106,10 +111,13 @@ pub fn generate_migrate_file(
     let relation_sqls = generate_relation_sqls(relation);
     let table_sqls = generation_table_sqls(table,default_config);
 
-    create_migrate_file(enum_sqls, &file_template)?;
+    log::info!("Generating migration file for enum creation.");
+    create_migrate_file(enum_sqls, &file_template,output_path)?;
     sleep(Duration::from_secs(1));
-    create_migrate_file(table_sqls, &file_template)?;
+    log::info!("Generating migration file for table creation.");
+    create_migrate_file(table_sqls, &file_template,output_path)?;
     sleep(Duration::from_secs(1));
-    create_migrate_file(relation_sqls, &file_template)?;
+    log::info!("Generating migration file for relation creation.");
+    create_migrate_file(relation_sqls, &file_template,output_path)?;
     Ok(())
 }
