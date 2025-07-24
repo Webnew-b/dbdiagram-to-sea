@@ -1,8 +1,7 @@
 # DBML to SeaORM Migration Generator (db-diagram-to-sea-orm)
 
-[![Build Status](https://img.shields.io/github/actions/workflow/status/YOUR_USERNAME/YOUR_REPO/rust.yml?branch=main)](https://github.com/YOUR_USERNAME/YOUR_REPO/actions)
-[![Crates.io](https://img.shields.io/crates/v/db-diagram-to-sea-orm.svg)](https://crates.io/crates/v/db-diagram-to-sea-orm)
-[![License](https://img.shields.io/crates/l/db-diagram-to-sea-orm.svg)](https://opensource.org/licenses/MIT)
+[![Build Status](https://img.shields.io/github/actions/workflow/status/Webnew-b/dbdiagram-to-sea/rust.yml?branch=main)](https://github.com/Webnew-b/dbdiagram-to-sea/actions)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 A command-line tool for automatically converting [DBML (Database Markup Language)](https://dbml.org/) files into migration code for [Rust SeaORM](https://www.sea-ql.org/SeaORM/). This tool aims to streamline the database schema design and synchronization process by generating boilerplate migration code directly from your DBML definitions.
 
@@ -179,4 +178,4 @@ Contributions are welcome! If you would like to help improve this tool, please f
 
 ## 📜 License
 
-This project is licensed under the [MIT License](https://opensource.org/licenses/MIT).
+This project is licensed under the [Apache License 2.0](https://opensource.org/licenses/Apache-2.0).
