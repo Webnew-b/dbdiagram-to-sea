@@ -3,3 +3,5 @@ git-add-auth.sh
 *.sh
 /output
 /input
+/config
+/templates
